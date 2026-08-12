@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 
 interface Ramp {
   name: string
@@ -183,6 +183,25 @@ function App() {
     a.click()
     URL.revokeObjectURL(url)
   }
+
+  const handleKeyboard = useCallback((e: KeyboardEvent) => {
+    // Ctrl/Cmd + K to focus file input
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault()
+      const input = document.querySelector('input[type="file"]') as HTMLInputElement
+      if (input) input.click()
+    }
+    // Ctrl/Cmd + Enter to download ASCII art
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault()
+      download('txt')
+    }
+  }, [download])
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyboard)
+    return () => window.removeEventListener('keydown', handleKeyboard)
+  }, [handleKeyboard])
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center transition-colors duration-300">
